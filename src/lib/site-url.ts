@@ -7,7 +7,7 @@ function stripTrailingSlash(value: string): string {
   return value.replace(/\/+$/, "");
 }
 
-export function siteOriginFromEnv(env: SiteUrlEnv = process.env): string {
+export function siteOriginFromEnv(env: SiteUrlEnv = process.env as SiteUrlEnv): string {
   const domain = env.RAILWAY_PUBLIC_DOMAIN?.trim();
   if (domain) {
     const host = stripTrailingSlash(domain.replace(/^https?:\/\//i, ""));
