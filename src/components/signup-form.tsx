@@ -4,8 +4,11 @@ import { useActionState, useState } from "react";
 import { addCharacter, type ActionState } from "@/app/actions";
 import { FormError, Honeypot, inputClass, labelClass, primaryButtonClass } from "@/components/ui";
 import {
+  CHARACTER_NAME_MAX,
   classesFor,
   CLASS_LABEL,
+  NICKNAME_MAX,
+  NICKNAME_MIN,
   racesFor,
   RACE_LABEL,
   rolesFor,
@@ -58,16 +61,28 @@ export function SignupForm({
       <input type="hidden" name="rosterId" value={rosterId} />
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className={labelClass} htmlFor="name">
-            Character name
+          <label className={labelClass} htmlFor="nickname">
+            Nickname
           </label>
           <input
-            id="name"
-            name="name"
+            id="nickname"
+            name="nickname"
             required
-            minLength={2}
-            maxLength={12}
-            pattern="[A-Za-z]{2,12}"
+            minLength={NICKNAME_MIN}
+            maxLength={NICKNAME_MAX}
+            placeholder="Riley"
+            autoComplete="off"
+            className={inputClass}
+          />
+        </div>
+        <div>
+          <label className={labelClass} htmlFor="characterName">
+            Character (optional)
+          </label>
+          <input
+            id="characterName"
+            name="characterName"
+            maxLength={CHARACTER_NAME_MAX}
             placeholder="Theron"
             autoComplete="off"
             className={inputClass}
@@ -156,7 +171,7 @@ export function SignupForm({
       ) : null}
       <FormError message={state.error} />
       <button type="submit" className={primaryButtonClass} disabled={pending}>
-        {pending ? "Adding…" : "Add character"}
+        {pending ? "Adding…" : "Join roster"}
       </button>
     </form>
   );

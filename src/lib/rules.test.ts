@@ -2,23 +2,33 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   classesFor,
+  cleanCharacterName,
   cleanSignupCode,
   cleanTitle,
   comboError,
-  formatCharacterName,
+  formatNickname,
   formatRosterText,
   isClass,
   isRace,
   isVersion,
+  nicknameKey,
   parseCap,
   racesFor,
 } from "./rules";
 
-test("character names are letters and title case", () => {
-  assert.equal(formatCharacterName(" thrall "), "Thrall");
-  assert.equal(formatCharacterName("A"), null);
-  assert.equal(formatCharacterName("Name With Space"), null);
-  assert.equal(formatCharacterName("Abcdefghijklm"), null);
+test("nicknames allow spaces, collapse them, and reject junk", () => {
+  assert.equal(formatNickname("  Rapid   life  raider "), "Rapid life raider");
+  assert.equal(formatNickname("Riley"), "Riley");
+  assert.equal(formatNickname("A"), null);
+  assert.equal(formatNickname("x".repeat(33)), null);
+  assert.equal(formatNickname("ok name"), "ok name");
+  assert.equal(formatNickname("ab"), "ab");
+  assert.equal(formatNickname("hi\nthere"), null);
+  assert.equal(formatNickname("tab\there"), null);
+  assert.equal(nicknameKey("Riley"), nicknameKey("riley"));
+  assert.equal(cleanCharacterName(""), "");
+  assert.equal(cleanCharacterName("  Theron  "), "Theron");
+  assert.equal(cleanCharacterName("x".repeat(25)), null);
 });
 
 test("forever accepts new race/class combos and rejects dropped content", () => {
@@ -105,7 +115,8 @@ test("discord export groups by role", () => {
     cap: 40,
     characters: [
       {
-        name: "Theron",
+        nickname: "Riley",
+        characterName: "Theron",
         race: "night_elf",
         className: "druid",
         role: "healer",
@@ -113,10 +124,30 @@ test("discord export groups by role", () => {
       },
     ],
   });
-  assert.match(text, /Sunday/);
+  assert.match(text, /\*\*Sunday\*\*/);
   assert.match(text, /WoW: Forever/);
   assert.match(text, /1\/40/);
-  assert.match(text, /Healer \(1\)/);
-  assert.match(text, /Theron · Night Elf Druid — resto/);
-  assert.match(text, /Tank \(0\)/);
+  assert.match(text, /\*\*Healer \(1\)\*\*/);
+  assert.match(text, /Riley \(Theron\) · Night Elf Druid · Healer — resto/);
+  assert.match(text, /\*\*Tank \(0\)\*\*/);
+
+  const nickOnly = formatRosterText({
+    title: "Sunday",
+    version: "forever",
+    ruleset: "pve",
+    faction: "horde",
+    cap: 10,
+    characters: [
+      {
+        nickname: "Rapid life raider",
+        characterName: "",
+        race: "orc",
+        className: "hunter",
+        role: "dps",
+        note: "",
+      },
+    ],
+  });
+  assert.match(nickOnly, /Rapid life raider · Orc Hunter · DPS/);
+  assert.doesNotMatch(nickOnly, /Rapid life raider \(/);
 });

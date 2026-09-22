@@ -25,3 +25,33 @@ body {
   background: #e0b15a;
   color: #14110e;
 }
+
+.stage-alliance {
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -8%, rgb(121 176 234 / 0.24), transparent 52%),
+    radial-gradient(ellipse 42% 36% at 92% 78%, rgb(224 177 90 / 0.1), transparent 55%),
+    #0b1218;
+}
+
+.stage-horde {
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -8%, rgb(227 106 92 / 0.24), transparent 52%),
+    radial-gradient(ellipse 42% 36% at 8% 80%, rgb(180 40 30 / 0.14), transparent 55%),
+    #160c0c;
+}
+
+.stage-watermark {
+  pointer-events: none;
+  position: absolute;
+  inset: auto 0 8% auto;
+  z-index: 0;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 4%;
+}

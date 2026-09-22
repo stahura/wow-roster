@@ -16,7 +16,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
           </h1>
           <p className="mt-4 max-w-md text-base leading-7 text-muted">
             Pick the ruleset and the faction for WoW: Forever. Friends open one link and add their
-            characters. You keep a second link that can remove names, lock the list, or delete it.
+            nickname. You keep a second link that can remove people, lock the list, or delete it.
           </p>
           <ul className="mt-6 grid gap-2 text-sm text-ink/90">
             <li>No accounts, no email, no Battle.net.</li>

@@ -74,7 +74,7 @@ export default async function ManagePage({
         signupCode={roster.signupCode}
         listText={listText}
       >
-        <RosterList characters={people} secret={secret} />
+        <RosterList characters={people} faction={shape.faction} secret={secret} />
       </ManagePanel>
     </Shell>
   );

@@ -15,11 +15,11 @@ The database file is created at `data/roster.db`. Copy `.env.example` to `.env.l
 
 ## Limits
 
-- Each roster holds at most 1000 characters, and only up to the cap the organizer chose.
+- Each roster holds at most 1000 people, and only up to the cap the organizer chose.
 - Roster creation is limited per network: 8 per hour and 20 per day.
 - Signups are limited to 40 per hour per network.
-- Names are 2–12 letters. Notes are 140 characters.
-- The organizer secret is stored as a hash. The signup page cannot remove people or change the sheet.
+- Nicknames are 2–32 characters and may include spaces. They are unique per roster, case-insensitive. An in-game character name is optional. Notes are 140 characters.
+- The organizer secret is stored as a hash. The signup page cannot remove people or change the sheet. Do not paste the manage link in public Discord.
 - An optional signup code keeps a leaked link from filling the sheet.
 
 IP addresses are hashed with the salt and kept only long enough to enforce those limits.

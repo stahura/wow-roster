@@ -42,9 +42,13 @@ export function ManagePanel({
     <div className="grid gap-6">
       <section className="rounded-2xl border border-gold/40 bg-panel p-5">
         <h2 className="font-serif text-xl text-ink">Organizer link</h2>
+        <p className="mt-3 rounded-lg border border-danger/40 bg-danger/10 px-3 py-2.5 text-sm leading-6 text-ink">
+          This manage link is a secret. Anyone with it can remove people, lock signup, or delete the
+          roster. Do not paste it in public Discord or other public channels. Share the signup link
+          instead.
+        </p>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-          Bookmark this page. Anyone with this link can remove people, lock signup, or delete the
-          roster. The signup link cannot.
+          Bookmark this page. The signup link cannot change the sheet.
         </p>
         <dl className="mt-4 grid gap-3">
           <div>
@@ -107,7 +111,7 @@ export function ManagePanel({
             {capPending ? "Saving…" : "Update cap"}
           </button>
         </form>
-        <CopyButton value={listText} label="Copy list" />
+        <CopyButton value={listText} label="Copy markdown" />
       </section>
       <FormError message={capState.error} />
       {capState.saved ? <p className="text-sm text-muted">Cap updated.</p> : null}

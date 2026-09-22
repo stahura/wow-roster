@@ -40,6 +40,9 @@ export const MAX_CAP = 1000;
 export const DEFAULT_CAP = 40;
 export const TITLE_MAX = 60;
 export const NOTE_MAX = 140;
+export const NICKNAME_MIN = 2;
+export const NICKNAME_MAX = 32;
+export const CHARACTER_NAME_MAX = 24;
 export const SIGNUP_CODE_MIN = 4;
 export const SIGNUP_CODE_MAX = 32;
 
@@ -209,10 +212,33 @@ export function comboError(
   return null;
 }
 
-export function formatCharacterName(raw: string): string | null {
-  const trimmed = raw.trim();
-  if (!/^[A-Za-z]{2,12}$/.test(trimmed)) return null;
-  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+function hasControlChars(value: string): boolean {
+  return /\p{Cc}|\p{Cs}/u.test(value);
+}
+
+function collapsePrintable(raw: string): string | null {
+  if (hasControlChars(raw)) return null;
+  return raw.trim().replace(/\s+/g, " ");
+}
+
+/** Player nickname. Spaces allowed. Case is preserved; uniqueness is case-insensitive. */
+export function formatNickname(raw: string): string | null {
+  const nickname = collapsePrintable(raw);
+  if (nickname === null) return null;
+  if (nickname.length < NICKNAME_MIN || nickname.length > NICKNAME_MAX) return null;
+  return nickname;
+}
+
+export function nicknameKey(nickname: string): string {
+  return nickname.toLocaleLowerCase("en");
+}
+
+/** Optional in-game character. Empty is allowed. */
+export function cleanCharacterName(raw: string): string | null {
+  const name = collapsePrintable(raw);
+  if (name === null) return null;
+  if (name.length > CHARACTER_NAME_MAX) return null;
+  return name;
 }
 
 export function cleanTitle(raw: string): string | null {
@@ -246,12 +272,37 @@ export function parseCap(raw: string): number | null {
 }
 
 export type CharacterLine = {
-  name: string;
+  nickname: string;
+  characterName: string;
   race: Race;
   className: ClassId;
   role: Role;
   note: string;
 };
+
+export function sortByClassThenNickname(a: CharacterLine, b: CharacterLine): number {
+  const byClass = CLASS_LABEL[a.className].localeCompare(CLASS_LABEL[b.className]);
+  return byClass === 0 ? a.nickname.localeCompare(b.nickname) : byClass;
+}
+
+export function playerSecondaryLine(character: CharacterLine): string {
+  return `${RACE_LABEL[character.race]} ${CLASS_LABEL[character.className]} · ${ROLE_LABEL[character.role]}`;
+}
+
+export function rosterShareDescription(input: {
+  version: Version;
+  ruleset: Ruleset;
+  faction: Faction;
+  count: number;
+  cap: number;
+}): string {
+  return [
+    VERSION_LABEL[input.version],
+    RULESET_LABEL[input.ruleset],
+    FACTION_LABEL[input.faction],
+    `${input.count}/${input.cap}`,
+  ].join(" · ");
+}
 
 export function formatRosterText(input: {
   title: string;
@@ -262,29 +313,29 @@ export function formatRosterText(input: {
   characters: CharacterLine[];
 }): string {
   const header = [
-    input.title,
-    [
-      VERSION_LABEL[input.version],
-      RULESET_LABEL[input.ruleset],
-      FACTION_LABEL[input.faction],
-      `${input.characters.length}/${input.cap}`,
-    ].join(" · "),
+    `**${input.title}**`,
+    rosterShareDescription({
+      version: input.version,
+      ruleset: input.ruleset,
+      faction: input.faction,
+      count: input.characters.length,
+      cap: input.cap,
+    }),
   ];
 
   const sections = ROLES.map((role) => {
     const people = input.characters
       .filter((character) => character.role === role)
       .slice()
-      .sort((a, b) => {
-        const byClass = CLASS_LABEL[a.className].localeCompare(CLASS_LABEL[b.className]);
-        return byClass === 0 ? a.name.localeCompare(b.name) : byClass;
-      });
+      .sort(sortByClassThenNickname);
     const lines = people.map((character) => {
-      const detail = `${RACE_LABEL[character.race]} ${CLASS_LABEL[character.className]}`;
+      const who = character.characterName
+        ? `${character.nickname} (${character.characterName})`
+        : character.nickname;
       const note = character.note ? ` — ${character.note}` : "";
-      return `- ${character.name} · ${detail}${note}`;
+      return `- ${who} · ${playerSecondaryLine(character)}${note}`;
     });
-    return [`${ROLE_LABEL[role]} (${people.length})`, ...lines].join("\n");
+    return [`**${ROLE_LABEL[role]} (${people.length})**`, ...lines].join("\n");
   });
 
   return [...header, "", ...sections].join("\n");

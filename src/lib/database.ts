@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS characters (
   roster_id text NOT NULL,
   name text NOT NULL,
   name_key text NOT NULL,
+  character_name text NOT NULL DEFAULT '',
   race text NOT NULL,
   class_name text NOT NULL,
   role text NOT NULL,
@@ -66,12 +67,26 @@ export function getDb() {
   return globalForDb.rosterDb;
 }
 
+async function ensureCharacterNameColumn(client: Client): Promise<void> {
+  const info = await client.execute("PRAGMA table_info(characters)");
+  const hasColumn = info.rows.some((row) => {
+    const record = row as Record<string, unknown>;
+    return String(record.name ?? "") === "character_name";
+  });
+  if (!hasColumn) {
+    await client.execute(
+      "ALTER TABLE characters ADD COLUMN character_name text NOT NULL DEFAULT ''",
+    );
+  }
+}
+
 export async function ensureDb(): Promise<void> {
   if (!globalForDb.rosterReady) {
     const client = getClient();
     globalForDb.rosterReady = (async () => {
       await client.execute("PRAGMA foreign_keys = ON");
       await client.executeMultiple(SCHEMA_SQL);
+      await ensureCharacterNameColumn(client);
     })().catch((error: unknown) => {
       globalForDb.rosterReady = undefined;
       throw error;

@@ -1,0 +1,7 @@
+<!-- Original crest. Not a Blizzard or Wowhead asset. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <path d="M32 4.5 55 14.2v18.6c0 13.4-9.4 24.2-23 27.7C18.4 57 9 46.2 9 32.8V14.2L32 4.5Z" fill="#16345e" stroke="#e0b15a" stroke-width="2.2"/>
+  <path d="M32 13.5 44 36H20L32 13.5Z" fill="#e0b15a"/>
+  <path d="M32 21.2 38.6 33.5H25.4L32 21.2Z" fill="#16345e"/>
+  <circle cx="32" cy="44.5" r="3.2" fill="#e0b15a"/>
+</svg>
