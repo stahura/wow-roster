@@ -1,4 +1,5 @@
 import { PlayerCard } from "@/components/player-card";
+import { RoleIcon } from "@/components/wow-icon";
 import {
   ROLES,
   ROLE_LABEL,
@@ -26,7 +27,8 @@ export function RosterList({
 
         return (
           <section key={role} className="rounded-2xl border border-line bg-panel/70 p-4">
-            <h2 className="font-serif text-lg text-ink">
+            <h2 className="flex items-center gap-2 font-serif text-lg text-ink">
+              <RoleIcon role={role} size={28} />
               {ROLE_LABEL[role]}{" "}
               <span className="text-sm text-muted">{people.length}</span>
             </h2>

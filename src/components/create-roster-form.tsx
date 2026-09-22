@@ -3,6 +3,8 @@
 import { useActionState } from "react";
 import { createRoster, type ActionState } from "@/app/actions";
 import { FormError, Honeypot, inputClass, labelClass, primaryButtonClass } from "@/components/ui";
+import { FactionCrest } from "@/components/wow-icon";
+import { FACTION_COLOR } from "@/lib/icons";
 import {
   DEFAULT_CAP,
   FACTIONS,
@@ -60,11 +62,8 @@ export function CreateRosterForm() {
           {FACTIONS.map((faction) => (
             <label
               key={faction}
-              className={`cursor-pointer rounded-lg border border-line px-3 py-3 text-center text-sm font-medium has-[:checked]:border-gold has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gold ${
-                faction === "alliance"
-                  ? "has-[:checked]:text-alliance"
-                  : "has-[:checked]:text-horde"
-              }`}
+              className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-line px-3 py-3 text-sm font-medium has-[:checked]:border-gold has-[:checked]:bg-paper has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gold"
+              style={{ color: FACTION_COLOR[faction] }}
             >
               <input
                 className="sr-only"
@@ -73,6 +72,7 @@ export function CreateRosterForm() {
                 value={faction}
                 defaultChecked={faction === "alliance"}
               />
+              <FactionCrest faction={faction} size={28} />
               {FACTION_LABEL[faction]}
             </label>
           ))}

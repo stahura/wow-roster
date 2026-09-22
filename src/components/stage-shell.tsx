@@ -13,7 +13,7 @@ export function StageShell({
   return (
     <div className={faction === "alliance" ? "stage-alliance" : "stage-horde"}>
       <div className="stage-watermark" aria-hidden="true">
-        <FactionCrest faction={faction} size={420} className="opacity-[0.07]" />
+        <FactionCrest faction={faction} size={420} decorative className="opacity-[0.12]" />
       </div>
       <div className="relative mx-auto flex min-h-dvh w-full max-w-6xl flex-col px-4 py-8 sm:px-6">
         <header className="mb-10 flex items-baseline justify-between gap-4">

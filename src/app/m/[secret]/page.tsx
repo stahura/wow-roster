@@ -4,7 +4,9 @@ import { ManagePanel } from "@/components/manage-panel";
 import { RememberManageLink } from "@/components/saved-rosters";
 import { RosterList } from "@/components/roster-list";
 import { Shell } from "@/components/shell";
+import { FactionCrest } from "@/components/wow-icon";
 import { requestOrigin } from "@/lib/http";
+import { FACTION_COLOR } from "@/lib/icons";
 import {
   assertRosterShape,
   getRosterBySecret,
@@ -40,7 +42,6 @@ export default async function ManagePage({
   const origin = await requestOrigin();
   const publicUrl = `${origin}/r/${roster.id}`;
   const manageUrl = `${origin}/m/${secret}`;
-  const factionClass = shape.faction === "alliance" ? "text-alliance" : "text-horde";
   const listText = formatRosterText({
     title: roster.title,
     version: shape.version,
@@ -54,7 +55,11 @@ export default async function ManagePage({
     <Shell>
       <RememberManageLink id={roster.id} title={roster.title} href={`/m/${secret}`} />
       <div className="mb-6">
-        <p className={`text-xs font-medium tracking-[0.16em] uppercase ${factionClass}`}>
+        <p
+          className="flex items-center gap-2 text-xs font-medium tracking-[0.16em] uppercase"
+          style={{ color: FACTION_COLOR[shape.faction] }}
+        >
+          <FactionCrest faction={shape.faction} size={22} />
           {FACTION_LABEL[shape.faction]} · {VERSION_LABEL[shape.version]} ·{" "}
           {RULESET_LABEL[shape.ruleset]}
         </p>
