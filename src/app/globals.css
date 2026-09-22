@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+  --color-ink: #f4ecdf;
+  --color-muted: #b6a892;
+  --color-paper: #14110e;
+  --color-panel: #221c17;
+  --color-line: #3d342b;
+  --color-gold: #e0b15a;
+  --color-alliance: #79b0ea;
+  --color-horde: #e36a5c;
+  --color-danger: #ff7a6b;
+}
+
+body {
+  background:
+    radial-gradient(ellipse 70% 45% at 50% -12%, rgb(224 177 90 / 0.16), transparent 55%),
+    var(--color-paper);
+  color: var(--color-ink);
+}
+
+::selection {
+  background: #e0b15a;
+  color: #14110e;
+}
