@@ -1,7 +1,0 @@
-<!-- Original class mark. Not a Blizzard or Wowhead asset. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <path d="M16 12c14 10 20 20 20 32" stroke="#ABD473" stroke-width="4" stroke-linecap="round"/>
-  <path d="M16 52c14-10 20-20 20-32" stroke="#ABD473" stroke-width="4" stroke-linecap="round"/>
-  <path d="M14 32h36" stroke="#ABD473" stroke-width="3.2" stroke-linecap="round"/>
-  <path d="M46 32 56 26v12L46 32Z" fill="#ABD473"/>
-</svg>

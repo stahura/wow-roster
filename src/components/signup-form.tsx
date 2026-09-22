@@ -2,7 +2,9 @@
 
 import { useActionState, useState } from "react";
 import { addCharacter, type ActionState } from "@/app/actions";
+import { IconSelect } from "@/components/icon-select";
 import { FormError, Honeypot, inputClass, labelClass, primaryButtonClass } from "@/components/ui";
+import { classColor, classIconSrc, raceColor, raceIconSrc, ROLE_COLOR, roleIconSrc } from "@/lib/icons";
 import {
   CHARACTER_NAME_MAX,
   classesFor,
@@ -13,6 +15,7 @@ import {
   RACE_LABEL,
   rolesFor,
   ROLE_LABEL,
+  type ClassId,
   type Faction,
   type Race,
   type Role,
@@ -49,7 +52,7 @@ export function SignupForm({
     setRole(nextRoles.includes(role) ? role : (nextRoles[0] ?? "dps"));
   }
 
-  function chooseClass(next: typeof classId) {
+  function chooseClass(next: ClassId) {
     const nextRoles = rolesFor(next);
     setClassId(next);
     setRole(nextRoles.includes(role) ? role : (nextRoles[0] ?? "dps"));
@@ -92,55 +95,52 @@ export function SignupForm({
           <label className={labelClass} htmlFor="race">
             Race
           </label>
-          <select
+          <IconSelect
             id="race"
             name="race"
-            className={inputClass}
             value={race}
-            onChange={(event) => chooseRace(event.target.value as Race)}
-          >
-            {races.map((option) => (
-              <option key={option} value={option}>
-                {RACE_LABEL[option]}
-              </option>
-            ))}
-          </select>
+            onChange={(next) => chooseRace(next as Race)}
+            options={races.map((option) => ({
+              value: option,
+              label: RACE_LABEL[option],
+              iconSrc: raceIconSrc(option),
+              color: raceColor(option),
+            }))}
+          />
         </div>
         <div>
           <label className={labelClass} htmlFor="className">
             Class
           </label>
-          <select
+          <IconSelect
             id="className"
             name="className"
-            className={inputClass}
             value={classId}
-            onChange={(event) => chooseClass(event.target.value as typeof classId)}
-          >
-            {classes.map((option) => (
-              <option key={option} value={option}>
-                {CLASS_LABEL[option]}
-              </option>
-            ))}
-          </select>
+            onChange={(next) => chooseClass(next as ClassId)}
+            options={classes.map((option) => ({
+              value: option,
+              label: CLASS_LABEL[option],
+              iconSrc: classIconSrc(option),
+              color: classColor(option),
+            }))}
+          />
         </div>
         <div>
           <label className={labelClass} htmlFor="role">
             Role
           </label>
-          <select
+          <IconSelect
             id="role"
             name="role"
-            className={inputClass}
             value={role}
-            onChange={(event) => setRole(event.target.value as Role)}
-          >
-            {roles.map((option) => (
-              <option key={option} value={option}>
-                {ROLE_LABEL[option]}
-              </option>
-            ))}
-          </select>
+            onChange={(next) => setRole(next as Role)}
+            options={roles.map((option) => ({
+              value: option,
+              label: ROLE_LABEL[option],
+              iconSrc: roleIconSrc(option),
+              color: ROLE_COLOR[option],
+            }))}
+          />
         </div>
       </div>
       <div>

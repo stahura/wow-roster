@@ -1,6 +1,8 @@
 import { CopyButton } from "@/components/copy-button";
 import { PlayerCard } from "@/components/player-card";
-import { FactionCrest } from "@/components/wow-icon";
+import { RoleStrip } from "@/components/role-strip";
+import { FactionCrest, RoleIcon } from "@/components/wow-icon";
+import { FACTION_COLOR } from "@/lib/icons";
 import {
   FACTION_LABEL,
   ROLE_LABEL,
@@ -30,15 +32,22 @@ export function RosterStage({
   characters: (CharacterLine & { id: string })[];
   listText: string;
 }) {
-  const factionClass = faction === "alliance" ? "text-alliance" : "text-horde";
+  const roleCounts = {
+    tank: characters.filter((character) => character.role === "tank").length,
+    healer: characters.filter((character) => character.role === "healer").length,
+    dps: characters.filter((character) => character.role === "dps").length,
+  };
 
   return (
     <div>
-      <div className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex items-start gap-4">
           <FactionCrest faction={faction} size={64} className="mt-1 shrink-0 drop-shadow-lg" />
           <div>
-            <p className={`text-xs font-medium tracking-[0.2em] uppercase ${factionClass}`}>
+            <p
+              className="text-xs font-medium tracking-[0.2em] uppercase"
+              style={{ color: FACTION_COLOR[faction] }}
+            >
               {FACTION_LABEL[faction]}
             </p>
             <h1 className="mt-2 font-serif text-4xl leading-tight text-ink sm:text-5xl">{title}</h1>
@@ -56,6 +65,8 @@ export function RosterStage({
         <CopyButton value={listText} label="Copy markdown" />
       </div>
 
+      <RoleStrip counts={roleCounts} />
+
       <div className="grid gap-8">
         {ROLES.map((role) => {
           const people = characters
@@ -66,8 +77,8 @@ export function RosterStage({
           return (
             <section key={role}>
               <div className="mb-3 flex items-center gap-3">
+                <RoleIcon role={role} size={28} />
                 <h2 className="font-serif text-2xl tracking-wide text-ink">{ROLE_LABEL[role]}</h2>
-                <span className="text-sm text-muted">{people.length}</span>
                 <div className="h-px flex-1 bg-gradient-to-r from-gold/50 to-transparent" />
               </div>
               {people.length === 0 ? (
