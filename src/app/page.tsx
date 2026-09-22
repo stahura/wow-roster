@@ -15,12 +15,12 @@ export default async function Home({ searchParams }: PageProps<"/">) {
             A signup sheet you can send around.
           </h1>
           <p className="mt-4 max-w-md text-base leading-7 text-muted">
-            Pick the game, the ruleset, and the faction. Friends open one link and add their
+            Pick the ruleset and the faction for WoW: Forever. Friends open one link and add their
             characters. You keep a second link that can remove names, lock the list, or delete it.
           </p>
           <ul className="mt-6 grid gap-2 text-sm text-ink/90">
             <li>No accounts, no email, no Battle.net.</li>
-            <li>Race and class are checked against faction and expansion.</li>
+            <li>Race and class are checked against Forever rules and faction.</li>
             <li>Each sheet stops at the cap you set, never above 1000.</li>
           </ul>
           {deleted ? (

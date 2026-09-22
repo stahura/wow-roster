@@ -1,4 +1,4 @@
-export const VERSIONS = ["classic", "tbc", "wrath"] as const;
+export const VERSIONS = ["forever"] as const;
 export type Version = (typeof VERSIONS)[number];
 
 export const RULESETS = ["pve", "pvp", "rp", "rppvp"] as const;
@@ -15,12 +15,11 @@ export const RACES = [
   "dwarf",
   "night_elf",
   "gnome",
-  "draenei",
+  "skyborne",
   "orc",
   "undead",
   "tauren",
   "troll",
-  "blood_elf",
 ] as const;
 export type Race = (typeof RACES)[number];
 
@@ -34,7 +33,6 @@ export const CLASSES = [
   "mage",
   "warlock",
   "druid",
-  "death_knight",
 ] as const;
 export type ClassId = (typeof CLASSES)[number];
 
@@ -45,16 +43,8 @@ export const NOTE_MAX = 140;
 export const SIGNUP_CODE_MIN = 4;
 export const SIGNUP_CODE_MAX = 32;
 
-const VERSION_RANK: Record<Version, number> = {
-  classic: 0,
-  tbc: 1,
-  wrath: 2,
-};
-
 export const VERSION_LABEL: Record<Version, string> = {
-  classic: "Classic Era",
-  tbc: "The Burning Crusade",
-  wrath: "Wrath of the Lich King",
+  forever: "WoW: Forever",
 };
 
 export const RULESET_LABEL: Record<Ruleset, string> = {
@@ -80,12 +70,11 @@ export const RACE_LABEL: Record<Race, string> = {
   dwarf: "Dwarf",
   night_elf: "Night Elf",
   gnome: "Gnome",
-  draenei: "Draenei",
+  skyborne: "Skyborne",
   orc: "Orc",
   undead: "Undead",
   tauren: "Tauren",
   troll: "Troll",
-  blood_elf: "Blood Elf",
 };
 
 export const CLASS_LABEL: Record<ClassId, string> = {
@@ -98,7 +87,6 @@ export const CLASS_LABEL: Record<ClassId, string> = {
   mage: "Mage",
   warlock: "Warlock",
   druid: "Druid",
-  death_knight: "Death Knight",
 };
 
 export const CLASS_COLOR: Record<ClassId, string> = {
@@ -111,33 +99,18 @@ export const CLASS_COLOR: Record<ClassId, string> = {
   mage: "#69CCF0",
   warlock: "#9482C9",
   druid: "#FF7D0A",
-  death_knight: "#C41F3B",
 };
 
-const RACE_FACTION: Record<Race, Faction> = {
+/** Fixed race→faction. Skyborne picks faction at signup (Alliance or Horde). */
+const FIXED_RACE_FACTION: Record<Exclude<Race, "skyborne">, Faction> = {
   human: "alliance",
   dwarf: "alliance",
   night_elf: "alliance",
   gnome: "alliance",
-  draenei: "alliance",
   orc: "horde",
   undead: "horde",
   tauren: "horde",
   troll: "horde",
-  blood_elf: "horde",
-};
-
-const RACE_SINCE: Record<Race, Version> = {
-  human: "classic",
-  dwarf: "classic",
-  night_elf: "classic",
-  gnome: "classic",
-  draenei: "tbc",
-  orc: "classic",
-  undead: "classic",
-  tauren: "classic",
-  troll: "classic",
-  blood_elf: "tbc",
 };
 
 const CLASS_ROLES: Record<ClassId, readonly Role[]> = {
@@ -150,55 +123,26 @@ const CLASS_ROLES: Record<ClassId, readonly Role[]> = {
   mage: ["dps"],
   warlock: ["dps"],
   druid: ["tank", "healer", "dps"],
-  death_knight: ["tank", "dps"],
 };
 
-/** Race/class pairs legal from Classic through Wrath. Cataclysm combos are intentionally absent. */
-const CLASS_RACES: Record<Exclude<ClassId, "death_knight">, readonly Race[]> = {
-  warrior: [
-    "human",
-    "dwarf",
-    "night_elf",
-    "gnome",
-    "draenei",
-    "orc",
-    "undead",
-    "tauren",
-    "troll",
-  ],
-  paladin: ["human", "dwarf", "draenei", "blood_elf"],
-  hunter: [
-    "dwarf",
-    "night_elf",
-    "draenei",
-    "orc",
-    "tauren",
-    "troll",
-    "blood_elf",
-  ],
-  rogue: [
-    "human",
-    "dwarf",
-    "night_elf",
-    "gnome",
-    "orc",
-    "undead",
-    "troll",
-    "blood_elf",
-  ],
-  priest: [
-    "human",
-    "dwarf",
-    "night_elf",
-    "draenei",
-    "undead",
-    "troll",
-    "blood_elf",
-  ],
-  shaman: ["draenei", "orc", "tauren", "troll"],
-  mage: ["human", "gnome", "draenei", "undead", "troll", "blood_elf"],
-  warlock: ["human", "gnome", "orc", "undead", "blood_elf"],
-  druid: ["night_elf", "tauren"],
+// Forever race/class matrix — Wowhead Forever / Icy Veins Forever (~Sep 2026).
+// New vs Classic Era: Human Hunter, Dwarf Shaman, Gnome Priest, Orc Mage,
+// Troll Warlock, Undead Paladin. Skyborne is faction-pickable (see below).
+const FIXED_RACE_CLASSES: Record<Exclude<Race, "skyborne">, readonly ClassId[]> = {
+  human: ["warrior", "hunter", "mage", "rogue", "priest", "warlock", "paladin"],
+  dwarf: ["warrior", "hunter", "rogue", "priest", "paladin", "shaman"],
+  night_elf: ["warrior", "hunter", "rogue", "priest", "druid"],
+  gnome: ["warrior", "mage", "rogue", "priest", "warlock"],
+  orc: ["warrior", "hunter", "mage", "rogue", "warlock", "shaman"],
+  undead: ["warrior", "mage", "rogue", "priest", "warlock", "paladin"],
+  tauren: ["warrior", "hunter", "druid", "shaman"],
+  troll: ["warrior", "hunter", "mage", "rogue", "priest", "warlock", "shaman"],
+};
+
+/** Skyborne class sets by chosen faction (not a fixed race→faction mapping). */
+const SKYBORNE_CLASSES: Record<Faction, readonly ClassId[]> = {
+  alliance: ["warrior", "hunter", "mage", "rogue", "druid"],
+  horde: ["warrior", "hunter", "rogue", "druid", "shaman"],
 };
 
 export function isVersion(value: string): value is Version {
@@ -225,24 +169,18 @@ export function isClass(value: string): value is ClassId {
   return (CLASSES as readonly string[]).includes(value);
 }
 
-export function racesFor(version: Version, faction: Faction): Race[] {
-  return RACES.filter(
-    (race) =>
-      RACE_FACTION[race] === faction &&
-      VERSION_RANK[RACE_SINCE[race]] <= VERSION_RANK[version],
-  );
+export function raceMatchesFaction(race: Race, faction: Faction): boolean {
+  if (race === "skyborne") return true;
+  return FIXED_RACE_FACTION[race] === faction;
 }
 
-export function classesFor(version: Version, race: Race): ClassId[] {
-  const available: ClassId[] = [];
-  for (const classId of CLASSES) {
-    if (classId === "death_knight") {
-      if (version === "wrath") available.push(classId);
-      continue;
-    }
-    if (CLASS_RACES[classId].includes(race)) available.push(classId);
-  }
-  return available;
+export function racesFor(_version: Version, faction: Faction): Race[] {
+  return RACES.filter((race) => raceMatchesFaction(race, faction));
+}
+
+export function classesFor(_version: Version, faction: Faction, race: Race): ClassId[] {
+  if (race === "skyborne") return [...SKYBORNE_CLASSES[faction]];
+  return [...FIXED_RACE_CLASSES[race]];
 }
 
 export function rolesFor(classId: ClassId): readonly Role[] {
@@ -256,13 +194,13 @@ export function comboError(
   classId: ClassId,
   role: Role,
 ): string | null {
-  if (RACE_FACTION[race] !== faction) {
+  if (!raceMatchesFaction(race, faction)) {
     return `${RACE_LABEL[race]} is not ${FACTION_LABEL[faction]}.`;
   }
   if (!racesFor(version, faction).includes(race)) {
     return `${RACE_LABEL[race]} is not playable in ${VERSION_LABEL[version]}.`;
   }
-  if (!classesFor(version, race).includes(classId)) {
+  if (!classesFor(version, faction, race).includes(classId)) {
     return `${RACE_LABEL[race]} cannot be a ${CLASS_LABEL[classId]} in ${VERSION_LABEL[version]}.`;
   }
   if (!rolesFor(classId).includes(role)) {

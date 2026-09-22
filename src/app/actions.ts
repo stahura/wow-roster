@@ -19,7 +19,6 @@ import {
   cleanTitle,
   isFaction,
   isRuleset,
-  isVersion,
   parseCap,
 } from "@/lib/rules";
 
@@ -54,14 +53,12 @@ export async function createRoster(
   }
 
   const title = cleanTitle(field(formData, "title"));
-  const version = field(formData, "version");
   const ruleset = field(formData, "ruleset");
   const faction = field(formData, "faction");
   const cap = parseCap(field(formData, "cap"));
   const signupCode = cleanSignupCode(field(formData, "signupCode"));
 
   if (!title) return { error: "Give the roster a name, up to 60 characters." };
-  if (!isVersion(version)) return { error: "Pick a game version." };
   if (!isRuleset(ruleset)) return { error: "Pick a ruleset." };
   if (!isFaction(faction)) return { error: "Pick a faction." };
   if (cap === null) return { error: "Cap must be a whole number from 1 to 1000." };
@@ -79,7 +76,7 @@ export async function createRoster(
   try {
     const created = await createRosterRecord({
       title,
-      version,
+      version: "forever",
       ruleset,
       faction,
       cap,
