@@ -10,7 +10,6 @@ import {
   MAX_CAP,
   RULESETS,
   RULESET_LABEL,
-  VERSIONS,
   VERSION_LABEL,
 } from "@/lib/rules";
 
@@ -37,16 +36,10 @@ export function CreateRosterForm() {
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className={labelClass} htmlFor="version">
-            Game
-          </label>
-          <select id="version" name="version" className={inputClass} defaultValue="classic">
-            {VERSIONS.map((version) => (
-              <option key={version} value={version}>
-                {VERSION_LABEL[version]}
-              </option>
-            ))}
-          </select>
+          <p className={labelClass}>Game</p>
+          <p className="mt-1.5 rounded-lg border border-line bg-paper px-3 py-2.5 text-sm text-ink">
+            {VERSION_LABEL.forever}
+          </p>
         </div>
         <div>
           <label className={labelClass} htmlFor="ruleset">

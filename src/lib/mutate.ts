@@ -51,7 +51,7 @@ export async function createRosterRecord(input: {
         id,
         manageKeyHash,
         title: input.title,
-        version: input.version,
+        version: "forever",
         ruleset: input.ruleset,
         faction: input.faction,
         cap: input.cap,

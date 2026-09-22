@@ -31,14 +31,14 @@ export function SignupForm({
 }) {
   const races = racesFor(version, faction);
   const [race, setRace] = useState<Race>(races[0] ?? "human");
-  const classes = classesFor(version, race);
+  const classes = classesFor(version, faction, race);
   const [classId, setClassId] = useState(classes[0] ?? "warrior");
   const roles = rolesFor(classId);
   const [role, setRole] = useState<Role>(roles[0] ?? "dps");
   const [state, action, pending] = useActionState(addCharacter, initial);
 
   function chooseRace(next: Race) {
-    const nextClasses = classesFor(version, next);
+    const nextClasses = classesFor(version, faction, next);
     const nextClass = nextClasses.includes(classId) ? classId : (nextClasses[0] ?? classId);
     const nextRoles = rolesFor(nextClass);
     setRace(next);

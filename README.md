@@ -2,7 +2,7 @@
 
 Shareable signup sheets for a World of Warcraft group. The organizer gets one private link. Everyone else gets a signup link. There are no accounts.
 
-Faction is Alliance or Horde. Ruleset is PvE, PvP, RP, or RP-PvP. The race and class list covers Classic Era, The Burning Crusade, and Wrath of the Lich King. Cataclysm and later combinations are not included.
+Built for World of Warcraft: Forever only. Faction is Alliance or Horde. Ruleset is PvE, PvP, RP, or RP-PvP. Race and class combinations follow the Forever matrix (including Skyborne, which chooses faction at signup). Classic Era, TBC, WotLK, and Retail are not supported.
 
 ## Run locally
 

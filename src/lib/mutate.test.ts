@@ -4,7 +4,12 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { RosterError } from "./errors";
-import { addCharacterRecord, createRosterRecord, setRosterLocked } from "./mutate";
+import {
+  addCharacterRecord,
+  createRosterRecord,
+  getRoster,
+  setRosterLocked,
+} from "./mutate";
 
 const directory = mkdtempSync(path.join(tmpdir(), "wow-roster-"));
 process.env.DATABASE_URL = `file:${path.join(directory, "test.db").replaceAll("\\", "/")}`;
@@ -20,12 +25,15 @@ async function rejectsRoster(run: () => Promise<void>, pattern: RegExp) {
 test("signup respects faction, cap, duplicate names, lock, and code", async () => {
   const created = await createRosterRecord({
     title: "Test",
-    version: "classic",
+    version: "forever",
     ruleset: "pve",
     faction: "horde",
     cap: 1,
     signupCode: "storm",
   });
+
+  const roster = await getRoster(created.id);
+  assert.equal(roster?.version, "forever");
 
   await rejectsRoster(
     () =>
@@ -97,7 +105,7 @@ test("signup respects faction, cap, duplicate names, lock, and code", async () =
 test("a locked roster rejects new names", async () => {
   const created = await createRosterRecord({
     title: "Locked",
-    version: "wrath",
+    version: "forever",
     ruleset: "rp",
     faction: "alliance",
     cap: 10,
@@ -111,7 +119,7 @@ test("a locked roster rejects new names", async () => {
         rosterId: created.id,
         name: "Darion",
         race: "human",
-        className: "death_knight",
+        className: "warrior",
         role: "tank",
         note: "",
         signupCode: "",
@@ -124,28 +132,114 @@ test("a locked roster rejects new names", async () => {
     rosterId: created.id,
     name: "Darion",
     race: "human",
-    className: "death_knight",
-    role: "tank",
+    className: "hunter",
+    role: "dps",
     note: "",
     signupCode: "",
   });
 });
 
-test("burning crusade blood elves can be paladins and not warriors", async () => {
+test("forever rejects dropped races and classes at signup", async () => {
   const created = await createRosterRecord({
-    title: "TBC",
-    version: "tbc",
+    title: "Forever",
+    version: "forever",
     ruleset: "pvp",
     faction: "horde",
     cap: 5,
     signupCode: "",
   });
 
+  await rejectsRoster(
+    () =>
+      addCharacterRecord({
+        rosterId: created.id,
+        name: "Kael",
+        race: "blood_elf",
+        className: "paladin",
+        role: "healer",
+        note: "",
+        signupCode: "",
+      }),
+    /Pick a race/,
+  );
+
+  await rejectsRoster(
+    () =>
+      addCharacterRecord({
+        rosterId: created.id,
+        name: "Darion",
+        race: "orc",
+        className: "death_knight",
+        role: "tank",
+        note: "",
+        signupCode: "",
+      }),
+    /Pick a race/,
+  );
+
+  await rejectsRoster(
+    () =>
+      addCharacterRecord({
+        rosterId: created.id,
+        name: "Velen",
+        race: "draenei",
+        className: "shaman",
+        role: "healer",
+        note: "",
+        signupCode: "",
+      }),
+    /Pick a race/,
+  );
+});
+
+test("skyborne signup follows faction class split", async () => {
+  const alliance = await createRosterRecord({
+    title: "Sky A",
+    version: "forever",
+    ruleset: "pve",
+    faction: "alliance",
+    cap: 5,
+    signupCode: "",
+  });
+
   await addCharacterRecord({
-    rosterId: created.id,
-    name: "Kael",
-    race: "blood_elf",
-    className: "paladin",
+    rosterId: alliance.id,
+    name: "Aerie",
+    race: "skyborne",
+    className: "mage",
+    role: "dps",
+    note: "",
+    signupCode: "",
+  });
+
+  await rejectsRoster(
+    () =>
+      addCharacterRecord({
+        rosterId: alliance.id,
+        name: "Storm",
+        race: "skyborne",
+        className: "shaman",
+        role: "healer",
+        note: "",
+        signupCode: "",
+      }),
+    /cannot be a Shaman/,
+  );
+
+  const horde = await createRosterRecord({
+    title: "Sky H",
+    version: "forever",
+    ruleset: "pve",
+    faction: "horde",
+    cap: 5,
+    signupCode: "",
+  });
+
+  await addCharacterRecord({
+    rosterId: horde.id,
+    name: "Gale",
+    race: "skyborne",
+    className: "shaman",
     role: "healer",
     note: "",
     signupCode: "",
@@ -154,14 +248,28 @@ test("burning crusade blood elves can be paladins and not warriors", async () =>
   await rejectsRoster(
     () =>
       addCharacterRecord({
-        rosterId: created.id,
-        name: "Warrior",
-        race: "blood_elf",
-        className: "warrior",
+        rosterId: horde.id,
+        name: "Spark",
+        race: "skyborne",
+        className: "mage",
         role: "dps",
         note: "",
         signupCode: "",
       }),
-    /cannot be a Warrior/,
+    /cannot be a Mage/,
   );
+});
+
+test("create always persists forever even if a legacy version is passed", async () => {
+  const created = await createRosterRecord({
+    title: "Cutover",
+    // @ts-expect-error intentional legacy input for cutover coverage
+    version: "classic",
+    ruleset: "pve",
+    faction: "alliance",
+    cap: 10,
+    signupCode: "",
+  });
+  const roster = await getRoster(created.id);
+  assert.equal(roster?.version, "forever");
 });
