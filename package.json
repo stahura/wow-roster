@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx --test src/lib/rules.test.ts src/lib/mutate.test.ts src/lib/site-url.test.ts src/lib/icons.test.ts"
+    "test": "tsx --test src/lib/rules.test.ts src/lib/mutate.test.ts src/lib/site-url.test.ts src/lib/icons.test.ts src/lib/player-card.test.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",

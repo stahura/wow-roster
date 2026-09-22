@@ -1,6 +1,5 @@
 import { removeCharacter } from "@/app/actions";
 import { ClassIcon, FactionCrest } from "@/components/wow-icon";
-import { classColor } from "@/lib/icons";
 import { playerSecondaryLine, type CharacterLine, type Faction } from "@/lib/rules";
 
 export function PlayerCard({
@@ -18,10 +17,9 @@ export function PlayerCard({
     <article
       className={
         featured
-          ? "min-w-[220px] flex-1 rounded-xl border border-white/10 border-l-4 bg-black/35 px-4 py-3 backdrop-blur-sm"
-          : "rounded-lg border border-line border-l-4 bg-paper px-3 py-2"
+          ? "min-w-[220px] flex-1 rounded-xl border border-white/10 bg-black/35 px-4 py-3 backdrop-blur-sm"
+          : "rounded-lg border border-line bg-paper px-3 py-2"
       }
-      style={{ borderLeftColor: classColor(character.className) }}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
