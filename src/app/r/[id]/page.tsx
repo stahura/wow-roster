@@ -4,6 +4,7 @@ import { RosterStage } from "@/components/roster-stage";
 import { SignupForm } from "@/components/signup-form";
 import { StageShell } from "@/components/stage-shell";
 import { requestOrigin } from "@/lib/http";
+import { metadataBaseFromOrigin } from "@/lib/site-url";
 import {
   assertRosterShape,
   getRoster,
@@ -34,10 +35,12 @@ export async function generateMetadata({
   });
   const origin = await requestOrigin();
   const url = origin ? `${origin}/r/${roster.id}` : undefined;
+  const metadataBase = metadataBaseFromOrigin(origin);
 
   return {
     title: roster.title,
     description,
+    ...(metadataBase ? { metadataBase } : {}),
     robots: { index: false, follow: false },
     openGraph: {
       title: roster.title,
