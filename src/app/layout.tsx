@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Outfit } from "next/font/google";
+import { siteOriginFromEnv } from "@/lib/site-url";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -13,6 +14,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteOriginFromEnv()),
   title: {
     default: "WoW Roster",
     template: "%s · WoW Roster",
