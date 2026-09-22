@@ -13,6 +13,7 @@ export const rosters = sqliteTable("rosters", {
   createdAt: integer("created_at").notNull(),
 });
 
+/** `name` / `nameKey` store the player nickname (legacy character-name rows migrate in place). */
 export const characters = sqliteTable(
   "characters",
   {
@@ -20,6 +21,7 @@ export const characters = sqliteTable(
     rosterId: text("roster_id").notNull(),
     name: text("name").notNull(),
     nameKey: text("name_key").notNull(),
+    characterName: text("character_name").notNull().default(""),
     race: text("race").notNull(),
     className: text("class_name").notNull(),
     role: text("role").notNull(),

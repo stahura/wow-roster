@@ -1,0 +1,6 @@
+<!-- Original class mark. Not a Blizzard or Wowhead asset. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <circle cx="32" cy="18" r="8" stroke="#F58CBA" stroke-width="3"/>
+  <path d="M29 26h6v22l-3 8-3-8V26Z" fill="#F58CBA"/>
+  <path d="M20 34h24v5H20z" fill="#F58CBA"/>
+</svg>

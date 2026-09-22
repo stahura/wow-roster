@@ -5,8 +5,9 @@ import { ensureDb, getDb } from "./database";
 import { RosterError } from "./errors";
 import { PUBLIC_ID_RE, randomId, SECRET_RE, sha256, sha256Equal } from "./ids";
 import {
+  cleanCharacterName,
   comboError,
-  formatCharacterName,
+  formatNickname,
   isClass,
   isFaction,
   isRace,
@@ -14,6 +15,7 @@ import {
   isRuleset,
   isVersion,
   MAX_CAP,
+  nicknameKey,
   type CharacterLine,
   type ClassId,
   type Faction,
@@ -98,16 +100,21 @@ export async function listCharacters(rosterId: string): Promise<CharacterRecord[
 
 export async function addCharacterRecord(input: {
   rosterId: string;
-  name: string;
+  nickname: string;
+  characterName?: string;
   race: string;
   className: string;
   role: string;
   note: string;
   signupCode: string;
 }): Promise<void> {
-  const name = formatCharacterName(input.name);
-  if (!name) {
-    throw new RosterError("Character names are 2–12 letters.");
+  const nickname = formatNickname(input.nickname);
+  if (!nickname) {
+    throw new RosterError("Nicknames are 2–32 characters and can include spaces.");
+  }
+  const characterName = cleanCharacterName(input.characterName ?? "");
+  if (characterName === null) {
+    throw new RosterError("Character names are optional and at most 24 characters.");
   }
   if (!isRace(input.race) || !isClass(input.className) || !isRole(input.role)) {
     throw new RosterError("Pick a race, class, and role from the list.");
@@ -117,6 +124,7 @@ export async function addCharacterRecord(input: {
   const className: ClassId = input.className;
   const role: Role = input.role;
   const note = input.note;
+  const key = nicknameKey(nickname);
 
   await ensureDb();
   const db = getDb();
@@ -144,9 +152,9 @@ export async function addCharacterRecord(input: {
         const [existing] = await tx
           .select({ id: characters.id })
           .from(characters)
-          .where(and(eq(characters.rosterId, roster.id), eq(characters.nameKey, name.toLowerCase())))
+          .where(and(eq(characters.rosterId, roster.id), eq(characters.nameKey, key)))
           .limit(1);
-        if (existing) throw new RosterError("That name is already on this roster.");
+        if (existing) throw new RosterError("That nickname is already on this roster.");
 
         const [counted] = await tx
           .select({ n: count() })
@@ -159,8 +167,9 @@ export async function addCharacterRecord(input: {
         await tx.insert(characters).values({
           id: randomId(12),
           rosterId: roster.id,
-          name,
-          nameKey: name.toLowerCase(),
+          name: nickname,
+          nameKey: key,
+          characterName,
           race,
           className,
           role,
@@ -173,7 +182,7 @@ export async function addCharacterRecord(input: {
   } catch (error) {
     if (error instanceof RosterError) throw error;
     if (isUniqueError(error)) {
-      throw new RosterError("That name is already on this roster.");
+      throw new RosterError("That nickname is already on this roster.");
     }
     throw error;
   }
@@ -225,7 +234,8 @@ export function visibleCharacters(
     if (!isRace(row.race) || !isClass(row.className) || !isRole(row.role)) continue;
     lines.push({
       id: row.id,
-      name: row.name,
+      nickname: row.name,
+      characterName: row.characterName ?? "",
       race: row.race,
       className: row.className,
       role: row.role,

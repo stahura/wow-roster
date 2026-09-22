@@ -22,7 +22,7 @@ async function rejectsRoster(run: () => Promise<void>, pattern: RegExp) {
   });
 }
 
-test("signup respects faction, cap, duplicate names, lock, and code", async () => {
+test("signup respects faction, cap, duplicate nicknames, lock, and code", async () => {
   const created = await createRosterRecord({
     title: "Test",
     version: "forever",
@@ -39,7 +39,7 @@ test("signup respects faction, cap, duplicate names, lock, and code", async () =
     () =>
       addCharacterRecord({
         rosterId: created.id,
-        name: "Theron",
+        nickname: "Theron",
         race: "human",
         className: "warrior",
         role: "tank",
@@ -53,7 +53,7 @@ test("signup respects faction, cap, duplicate names, lock, and code", async () =
     () =>
       addCharacterRecord({
         rosterId: created.id,
-        name: "Thrall",
+        nickname: "Thrall",
         race: "orc",
         className: "shaman",
         role: "healer",
@@ -65,7 +65,7 @@ test("signup respects faction, cap, duplicate names, lock, and code", async () =
 
   await addCharacterRecord({
     rosterId: created.id,
-    name: "thrall",
+    nickname: "thrall",
     race: "orc",
     className: "shaman",
     role: "healer",
@@ -77,7 +77,7 @@ test("signup respects faction, cap, duplicate names, lock, and code", async () =
     () =>
       addCharacterRecord({
         rosterId: created.id,
-        name: "Thrall",
+        nickname: "Thrall",
         race: "orc",
         className: "shaman",
         role: "dps",
@@ -91,7 +91,7 @@ test("signup respects faction, cap, duplicate names, lock, and code", async () =
     () =>
       addCharacterRecord({
         rosterId: created.id,
-        name: "Durotan",
+        nickname: "Durotan",
         race: "orc",
         className: "warrior",
         role: "tank",
@@ -117,7 +117,7 @@ test("a locked roster rejects new names", async () => {
     () =>
       addCharacterRecord({
         rosterId: created.id,
-        name: "Darion",
+        nickname: "Darion",
         race: "human",
         className: "warrior",
         role: "tank",
@@ -130,7 +130,7 @@ test("a locked roster rejects new names", async () => {
   await setRosterLocked(created.id, false);
   await addCharacterRecord({
     rosterId: created.id,
-    name: "Darion",
+    nickname: "Darion",
     race: "human",
     className: "hunter",
     role: "dps",
@@ -153,7 +153,7 @@ test("forever rejects dropped races and classes at signup", async () => {
     () =>
       addCharacterRecord({
         rosterId: created.id,
-        name: "Kael",
+        nickname: "Kael",
         race: "blood_elf",
         className: "paladin",
         role: "healer",
@@ -167,7 +167,7 @@ test("forever rejects dropped races and classes at signup", async () => {
     () =>
       addCharacterRecord({
         rosterId: created.id,
-        name: "Darion",
+        nickname: "Darion",
         race: "orc",
         className: "death_knight",
         role: "tank",
@@ -181,7 +181,7 @@ test("forever rejects dropped races and classes at signup", async () => {
     () =>
       addCharacterRecord({
         rosterId: created.id,
-        name: "Velen",
+        nickname: "Velen",
         race: "draenei",
         className: "shaman",
         role: "healer",
@@ -204,7 +204,7 @@ test("skyborne signup follows faction class split", async () => {
 
   await addCharacterRecord({
     rosterId: alliance.id,
-    name: "Aerie",
+    nickname: "Aerie",
     race: "skyborne",
     className: "mage",
     role: "dps",
@@ -216,7 +216,7 @@ test("skyborne signup follows faction class split", async () => {
     () =>
       addCharacterRecord({
         rosterId: alliance.id,
-        name: "Storm",
+        nickname: "Storm",
         race: "skyborne",
         className: "shaman",
         role: "healer",
@@ -237,7 +237,7 @@ test("skyborne signup follows faction class split", async () => {
 
   await addCharacterRecord({
     rosterId: horde.id,
-    name: "Gale",
+    nickname: "Gale",
     race: "skyborne",
     className: "shaman",
     role: "healer",
@@ -249,7 +249,7 @@ test("skyborne signup follows faction class split", async () => {
     () =>
       addCharacterRecord({
         rosterId: horde.id,
-        name: "Spark",
+        nickname: "Spark",
         race: "skyborne",
         className: "mage",
         role: "dps",
@@ -257,6 +257,68 @@ test("skyborne signup follows faction class split", async () => {
         signupCode: "",
       }),
     /cannot be a Mage/,
+  );
+});
+
+test("nickname uniqueness is case-insensitive per roster and ignores race or class", async () => {
+  const created = await createRosterRecord({
+    title: "Nicks",
+    version: "forever",
+    ruleset: "pve",
+    faction: "horde",
+    cap: 5,
+    signupCode: "",
+  });
+
+  await addCharacterRecord({
+    rosterId: created.id,
+    nickname: "  Rapid   life  raider ",
+    characterName: "Thrall",
+    race: "orc",
+    className: "shaman",
+    role: "healer",
+    note: "",
+    signupCode: "",
+  });
+
+  await rejectsRoster(
+    () =>
+      addCharacterRecord({
+        rosterId: created.id,
+        nickname: "rapid life raider",
+        characterName: "Other",
+        race: "troll",
+        className: "hunter",
+        role: "dps",
+        note: "",
+        signupCode: "",
+      }),
+    /already/,
+  );
+
+  await addCharacterRecord({
+    rosterId: created.id,
+    nickname: "Riley",
+    characterName: "",
+    race: "orc",
+    className: "shaman",
+    role: "dps",
+    note: "",
+    signupCode: "",
+  });
+
+  await rejectsRoster(
+    () =>
+      addCharacterRecord({
+        rosterId: created.id,
+        nickname: "A",
+        race: "orc",
+        className: "warrior",
+        role: "tank",
+        note: "",
+        signupCode: "",
+      }),
+    /2–32/,
   );
 });
 

@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     template: "%s · WoW Roster",
   },
   description:
-    "Shareable signup sheets for World of Warcraft groups. No accounts. Faction and expansion are checked on every character.",
+    "Shareable signup sheets for World of Warcraft: Forever. No accounts. Nickname-first lineup with faction and race/class checks.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

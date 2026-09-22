@@ -95,7 +95,7 @@ export async function addCharacter(
   formData: FormData,
 ): Promise<ActionState> {
   if (honeypotTripped(formData)) {
-    return { error: "Could not add that character." };
+    return { error: "Could not add that player." };
   }
 
   const rosterId = field(formData, "rosterId");
@@ -110,7 +110,8 @@ export async function addCharacter(
   try {
     await addCharacterRecord({
       rosterId,
-      name: field(formData, "name"),
+      nickname: field(formData, "nickname"),
+      characterName: field(formData, "characterName"),
       race: field(formData, "race"),
       className: field(formData, "className"),
       role: field(formData, "role"),
