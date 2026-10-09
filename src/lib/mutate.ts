@@ -107,7 +107,7 @@ export async function addCharacterRecord(input: {
   role: string;
   note: string;
   signupCode: string;
-}): Promise<void> {
+}): Promise<string> {
   const nickname = formatNickname(input.nickname);
   if (!nickname) {
     throw new RosterError("Nicknames are 2–32 characters and can include spaces.");
@@ -128,6 +128,7 @@ export async function addCharacterRecord(input: {
 
   await ensureDb();
   const db = getDb();
+  const id = randomId(12);
 
   try {
     await db.transaction(
@@ -165,7 +166,7 @@ export async function addCharacterRecord(input: {
         if (taken >= limit) throw new RosterError("That roster is full.");
 
         await tx.insert(characters).values({
-          id: randomId(12),
+          id,
           rosterId: roster.id,
           name: nickname,
           nameKey: key,
@@ -179,6 +180,7 @@ export async function addCharacterRecord(input: {
       },
       { behavior: "immediate" },
     );
+    return id;
   } catch (error) {
     if (error instanceof RosterError) throw error;
     if (isUniqueError(error)) {

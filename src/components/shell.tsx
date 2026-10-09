@@ -1,16 +1,23 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { TopBar } from "@/components/roster-view";
+import type { Faction } from "@/lib/rules";
 
-export function Shell({ children }: { children: ReactNode }) {
+export function Shell({
+  children,
+  faction,
+  actions,
+}: {
+  children: ReactNode;
+  faction?: Faction;
+  actions?: ReactNode;
+}) {
+  const tone = faction === "alliance" ? "lit-alliance" : faction === "horde" ? "lit-horde" : "lit-gold";
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 py-8 sm:px-6">
-      <header className="mb-8 flex items-baseline justify-between gap-4">
-        <Link href="/" className="font-serif text-xl tracking-tight text-ink">
-          WoW Roster
-        </Link>
-        <p className="text-xs tracking-[0.16em] text-muted uppercase">No accounts</p>
-      </header>
-      <div className="flex-1">{children}</div>
+    <div className={`flex min-h-dvh flex-col ${tone}`}>
+      <TopBar>{actions}</TopBar>
+      <main className="mx-auto w-full max-w-[1180px] flex-1 px-[18px] pt-8 pb-16 lg:px-12 lg:pt-14">
+        {children}
+      </main>
     </div>
   );
 }

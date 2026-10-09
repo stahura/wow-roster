@@ -80,18 +80,19 @@ export function SavedRosters() {
   if (links.length === 0) return null;
 
   return (
-    <section className="mt-8">
-      <h2 className="text-xs font-medium tracking-[0.14em] text-muted uppercase">
-        On this browser
+    <section className="flex max-w-md flex-col gap-3">
+      <h2 className="font-mono text-[11px] leading-none font-semibold tracking-[0.12em] text-faint">
+        ON THIS BROWSER
       </h2>
-      <ul className="mt-3 grid gap-2">
+      <ul className="grid gap-1.5">
         {links.map((link) => (
           <li key={link.id}>
             <a
               href={link.href}
-              className="block truncate rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink hover:border-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+              className="flex items-center justify-between gap-3 rounded-[10px] border border-[rgb(244_236_223/0.06)] bg-tile px-3.5 py-3 text-[14px] font-medium text-ink transition hover:border-gold/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
             >
-              {link.title}
+              <span className="truncate">{link.title}</span>
+              <span className="shrink-0 text-[12px] font-normal text-faint">Manage →</span>
             </a>
           </li>
         ))}

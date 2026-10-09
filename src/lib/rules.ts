@@ -340,3 +340,27 @@ export function formatRosterText(input: {
 
   return [...header, "", ...sections].join("\n");
 }
+
+export type ClassMix = { classId: ClassId; count: number }[];
+
+/** Role counts plus the class mix, largest class first (ties keep class order). */
+export function rosterSummary(characters: Pick<CharacterLine, "role" | "className">[]): {
+  roles: Record<Role, number>;
+  classes: ClassMix;
+} {
+  const roles: Record<Role, number> = { tank: 0, healer: 0, dps: 0 };
+  const byClass = new Map<ClassId, number>();
+  for (const character of characters) {
+    roles[character.role] += 1;
+    byClass.set(character.className, (byClass.get(character.className) ?? 0) + 1);
+  }
+  const classes = CLASSES.filter((classId) => byClass.has(classId))
+    .map((classId) => ({ classId, count: byClass.get(classId) ?? 0 }))
+    .sort((a, b) => b.count - a.count);
+  return { roles, classes };
+}
+
+/** "Priests", "Druids": class names pluralize with a plain s. */
+export function classPlural(classId: ClassId): string {
+  return `${CLASS_LABEL[classId]}s`;
+}

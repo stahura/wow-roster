@@ -13,6 +13,7 @@ import {
   isVersion,
   nicknameKey,
   parseCap,
+  rosterSummary,
   racesFor,
 } from "./rules";
 
@@ -150,4 +151,20 @@ test("discord export groups by role", () => {
   });
   assert.match(nickOnly, /Rapid life raider · Orc Hunter · DPS/);
   assert.doesNotMatch(nickOnly, /Rapid life raider \(/);
+});
+
+test("rosterSummary counts roles and orders the class mix largest first", () => {
+  const summary = rosterSummary([
+    { role: "tank", className: "warrior" },
+    { role: "healer", className: "priest" },
+    { role: "dps", className: "mage" },
+    { role: "dps", className: "mage" },
+    { role: "dps", className: "warrior" },
+  ]);
+  assert.deepEqual(summary.roles, { tank: 1, healer: 1, dps: 3 });
+  assert.deepEqual(summary.classes, [
+    { classId: "warrior", count: 2 },
+    { classId: "mage", count: 2 },
+    { classId: "priest", count: 1 },
+  ]);
 });
