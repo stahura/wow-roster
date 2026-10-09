@@ -107,8 +107,9 @@ export async function addCharacter(
     return { error: "Too many signups from this network. Try again later." };
   }
 
+  let joinedId = "";
   try {
-    await addCharacterRecord({
+    joinedId = await addCharacterRecord({
       rosterId,
       nickname: field(formData, "nickname"),
       characterName: field(formData, "characterName"),
@@ -123,7 +124,7 @@ export async function addCharacter(
   }
 
   revalidatePath(`/r/${rosterId}`);
-  return {};
+  redirect(`/r/${rosterId}?joined=${joinedId}`);
 }
 
 async function managedRoster(secret: string) {

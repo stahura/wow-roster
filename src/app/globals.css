@@ -1,23 +1,80 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, Menlo, monospace;
+
+  /* Ink scale on warm near-black. */
   --color-ink: #f4ecdf;
+  --color-soft: #d9cfbf;
   --color-muted: #b6a892;
-  --color-paper: #14110e;
-  --color-panel: #221c17;
+  --color-faint: #8a7e6c;
+
+  /* Surfaces, darkest to lightest. */
+  --color-paper: #100e0c;
+  --color-well: #120f0d;
+  --color-sheet: #1a1612;
+  --color-tile: #1b1713;
+  --color-chip: #211b16;
+  --color-raised: #2c241d;
+  --color-panel: #1b1713;
   --color-line: #3d342b;
+
   --color-gold: #e0b15a;
+  --color-gold-bright: #ecc274;
   --color-alliance: #79b0ea;
   --color-horde: #e36a5c;
+  --color-tank: #5b9cf5;
+  --color-healer: #4fd44f;
+  --color-dps: #e36a5c;
   --color-danger: #ff7a6b;
+
+  --animate-rise: rise 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-glow: glow 2.4s ease-out 1;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 0 0 rgb(224 177 90 / 0.7);
+  }
+  40% {
+    box-shadow: 0 0 0 6px rgb(224 177 90 / 0.25);
+  }
+  100% {
+    box-shadow: 0 0 0 2px rgb(224 177 90 / 0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
-  background:
-    radial-gradient(ellipse 70% 45% at 50% -12%, rgb(224 177 90 / 0.16), transparent 55%),
-    var(--color-paper);
+  background: var(--color-paper);
   color: var(--color-ink);
 }
 
@@ -26,32 +83,46 @@ body {
   color: #14110e;
 }
 
-.stage-alliance {
-  position: relative;
-  isolation: isolate;
-  min-height: 100dvh;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -8%, rgb(121 176 234 / 0.24), transparent 52%),
-    radial-gradient(ellipse 42% 36% at 92% 78%, rgb(224 177 90 / 0.1), transparent 55%),
-    #0b1218;
+/* Hairlines are translucent ink so they sit on any surface. */
+.hairline {
+  border-color: rgb(244 236 223 / 0.06);
 }
 
-.stage-horde {
-  position: relative;
-  isolation: isolate;
-  min-height: 100dvh;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -8%, rgb(227 106 92 / 0.24), transparent 52%),
-    radial-gradient(ellipse 42% 36% at 8% 80%, rgb(180 40 30 / 0.14), transparent 55%),
-    #160c0c;
+.hairline-strong {
+  border-color: rgb(244 236 223 / 0.12);
 }
 
-.stage-watermark {
-  pointer-events: none;
-  position: absolute;
-  inset: auto 0 8% auto;
-  z-index: 0;
-  display: flex;
-  justify-content: flex-end;
-  padding-right: 4%;
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Faction-lit page: a soft glow from the top, colored by the roster's faction. */
+.lit-alliance {
+  --faction: #79b0ea;
+  background: radial-gradient(900px 380px at 30% -120px, rgb(121 176 234 / 0.2), transparent 70%);
+}
+
+.lit-horde {
+  --faction: #e36a5c;
+  background: radial-gradient(900px 380px at 30% -120px, rgb(227 106 92 / 0.22), transparent 70%);
+}
+
+.lit-gold {
+  background: radial-gradient(900px 380px at 30% -120px, rgb(224 177 90 / 0.14), transparent 70%);
+}
+
+@media (max-width: 1023px) {
+  .lit-alliance {
+    background: radial-gradient(460px 280px at 50% -60px, rgb(121 176 234 / 0.22), transparent 70%);
+  }
+  .lit-horde {
+    background: radial-gradient(460px 280px at 50% -60px, rgb(227 106 92 / 0.26), transparent 70%);
+  }
+  .lit-gold {
+    background: radial-gradient(460px 280px at 50% -60px, rgb(224 177 90 / 0.14), transparent 70%);
+  }
 }

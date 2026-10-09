@@ -1,15 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { secondaryButtonClass } from "@/components/ui";
+import { pillButtonClass } from "@/components/ui";
 
-export function CopyButton({ value, label }: { value: string; label: string }) {
+export function CopyButton({
+  value,
+  label,
+  copiedLabel = "Copied",
+  className = pillButtonClass,
+}: {
+  value: string;
+  label: string;
+  copiedLabel?: string;
+  className?: string;
+}) {
   const [copied, setCopied] = useState(false);
 
   return (
     <button
       type="button"
-      className={secondaryButtonClass}
+      className={className}
       onClick={async () => {
         try {
           await navigator.clipboard.writeText(value);
@@ -20,7 +30,7 @@ export function CopyButton({ value, label }: { value: string; label: string }) {
         }
       }}
     >
-      {copied ? "Copied" : label}
+      <span aria-live="polite">{copied ? copiedLabel : label}</span>
     </button>
   );
 }

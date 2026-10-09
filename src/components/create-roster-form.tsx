@@ -2,8 +2,18 @@
 
 import { useActionState } from "react";
 import { createRoster, type ActionState } from "@/app/actions";
-import { FormError, Honeypot, inputClass, labelClass, primaryButtonClass } from "@/components/ui";
-import { FactionCrest } from "@/components/wow-icon";
+import {
+  FormError,
+  groupLabelClass,
+  Honeypot,
+  inputClass,
+  labelClass,
+  optionalClass,
+  primaryButtonClass,
+  sheetClass,
+} from "@/components/ui";
+import { submitWithoutReset } from "@/components/submit-without-reset";
+import { FactionSeal } from "@/components/wow-icon";
 import { FACTION_COLOR } from "@/lib/icons";
 import {
   DEFAULT_CAP,
@@ -12,106 +22,117 @@ import {
   MAX_CAP,
   RULESETS,
   RULESET_LABEL,
+  TITLE_MAX,
   VERSION_LABEL,
 } from "@/lib/rules";
 
 const initial: ActionState = {};
 
+const focusWithin =
+  "has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gold";
+
 export function CreateRosterForm() {
   const [state, action, pending] = useActionState(createRoster, initial);
 
   return (
-    <form action={action} className="relative grid gap-4 rounded-2xl border border-line bg-panel p-5 sm:p-6">
+    <form onSubmit={submitWithoutReset(action)} className={`${sheetClass} relative flex flex-col gap-5 p-5 sm:p-[22px]`}>
       <Honeypot />
-      <div>
-        <label className={labelClass} htmlFor="title">
-          Roster name
-        </label>
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 className="font-serif text-[30px] leading-none text-ink">New roster</h2>
+        <span className="text-[12.5px] text-faint">{VERSION_LABEL.forever}</span>
+      </div>
+
+      <label className="flex flex-col gap-1.5">
+        <span className={labelClass}>Roster name</span>
         <input
-          id="title"
           name="title"
           required
-          maxLength={60}
+          maxLength={TITLE_MAX}
           placeholder="Molten Core Sunday"
           className={inputClass}
         />
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <p className={labelClass}>Game</p>
-          <p className="mt-1.5 rounded-lg border border-line bg-paper px-3 py-2.5 text-sm text-ink">
-            {VERSION_LABEL.forever}
-          </p>
-        </div>
-        <div>
-          <label className={labelClass} htmlFor="ruleset">
-            Ruleset
-          </label>
-          <select id="ruleset" name="ruleset" className={inputClass} defaultValue="pve">
-            {RULESETS.map((ruleset) => (
-              <option key={ruleset} value={ruleset}>
-                {RULESET_LABEL[ruleset]}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <fieldset>
-        <legend className={labelClass}>Faction</legend>
-        <div className="mt-1.5 grid grid-cols-2 gap-2">
+      </label>
+
+      <fieldset className="flex min-w-0 flex-col">
+        <legend className={`${groupLabelClass} mb-2`}>Faction</legend>
+        <div className="grid grid-cols-2 gap-2">
           {FACTIONS.map((faction) => (
             <label
               key={faction}
-              className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-line px-3 py-3 text-sm font-medium has-[:checked]:border-gold has-[:checked]:bg-paper has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gold"
-              style={{ color: FACTION_COLOR[faction] }}
+              className={`group flex cursor-pointer items-center gap-3 rounded-[14px] border border-[rgb(244_236_223/0.08)] bg-chip p-3 transition hover:border-[rgb(244_236_223/0.18)] has-[:checked]:border-[var(--faction)] has-[:checked]:bg-[color-mix(in_oklab,var(--faction)_12%,#211b16)] ${focusWithin}`}
+              style={{ ["--faction" as string]: FACTION_COLOR[faction] }}
             >
               <input
-                className="sr-only"
+                className="peer sr-only"
                 type="radio"
                 name="faction"
                 value={faction}
                 defaultChecked={faction === "alliance"}
               />
-              <FactionCrest faction={faction} size={28} />
-              {FACTION_LABEL[faction]}
+              <FactionSeal faction={faction} className="size-10" decorative />
+              <span className="text-[15px] leading-none font-semibold text-soft group-has-[:checked]:text-ink">
+                {FACTION_LABEL[faction]}
+              </span>
             </label>
           ))}
         </div>
       </fieldset>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className={labelClass} htmlFor="cap">
-            Size cap
-          </label>
+
+      <fieldset className="flex min-w-0 flex-col">
+        <legend className={`${groupLabelClass} mb-2`}>Ruleset</legend>
+        <div className="grid grid-cols-4 gap-1 rounded-[12px] border border-[rgb(244_236_223/0.08)] bg-well p-1">
+          {RULESETS.map((ruleset) => (
+            <label
+              key={ruleset}
+              className={`flex h-[38px] cursor-pointer items-center justify-center rounded-[8px] text-[13.5px] font-medium text-muted transition hover:text-ink has-[:checked]:bg-raised has-[:checked]:font-semibold has-[:checked]:text-ink has-[:checked]:shadow-[inset_0_0_0_1px_rgb(224_177_90/0.5)] ${focusWithin}`}
+            >
+              <input
+                className="sr-only"
+                type="radio"
+                name="ruleset"
+                value={ruleset}
+                defaultChecked={ruleset === "pve"}
+              />
+              {RULESET_LABEL[ruleset]}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <div className="grid grid-cols-2 gap-2.5">
+        <label className="flex min-w-0 flex-col gap-1.5">
+          <span className={labelClass}>Size cap</span>
           <input
-            id="cap"
             name="cap"
             type="number"
+            inputMode="numeric"
             min={1}
             max={MAX_CAP}
             defaultValue={DEFAULT_CAP}
             required
-            className={inputClass}
+            className={`${inputClass} font-mono`}
           />
-          <p className="mt-1.5 text-xs text-muted">A raid is often 40. A guild list can go to 1000.</p>
-        </div>
-        <div>
-          <label className={labelClass} htmlFor="signupCode">
-            Signup code
-          </label>
+        </label>
+        <label className="flex min-w-0 flex-col gap-1.5">
+          <span className={labelClass}>
+            Signup code <span className={optionalClass}>optional</span>
+          </span>
           <input
-            id="signupCode"
             name="signupCode"
             maxLength={32}
-            placeholder="Optional"
+            placeholder="mc sunday"
             autoComplete="off"
-            className={inputClass}
+            className={`${inputClass} font-mono`}
           />
-          <p className="mt-1.5 text-xs text-muted">Leave blank and the link is enough. Otherwise friends type this code.</p>
-        </div>
+        </label>
       </div>
+      <p className="-mt-2 text-[12.5px] leading-5 text-faint">
+        A raid is usually 40; a guild list can go to 1000. With a code, friends type it to join;
+        without one, the link is enough.
+      </p>
+
       <FormError message={state.error} />
-      <button type="submit" className={primaryButtonClass} disabled={pending}>
+      <button type="submit" className={`${primaryButtonClass} w-full`} disabled={pending}>
         {pending ? "Creating…" : "Create roster"}
       </button>
     </form>

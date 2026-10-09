@@ -73,3 +73,16 @@ export function raceColor(race: Race): string {
   if (race === "skyborne") return "#e0b15a";
   return FACTION_COLOR[FIXED_RACE_FACTION[race]];
 }
+
+/**
+ * Class color for text on the dark surfaces. Shaman and Warlock are lifted a
+ * little so they pass AA as text; every other class uses its official color.
+ */
+const CLASS_TEXT_COLOR: Partial<Record<ClassId, string>> = {
+  shaman: "#4a9bf2",
+  warlock: "#a797d8",
+};
+
+export function classTextColor(classId: ClassId): string {
+  return CLASS_TEXT_COLOR[classId] ?? CLASS_COLOR[classId];
+}
